@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.client.MongoCollection;
 import edu.cmu.andrew.workbnb.server.http.exceptions.HttpBadRequestException;
 import edu.cmu.andrew.workbnb.server.http.responses.AppResponse;
+import edu.cmu.andrew.workbnb.server.http.utils.PATCH;
 import edu.cmu.andrew.workbnb.server.managers.LandlordManager;
 import edu.cmu.andrew.workbnb.server.managers.UserManager;
 import edu.cmu.andrew.workbnb.server.models.Landlord;
@@ -19,6 +20,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/landlords")
 public class LandlordHttpInterface extends HttpInterface {
@@ -56,21 +61,49 @@ public class LandlordHttpInterface extends HttpInterface {
     //Pagination: http://localhost:8080/api/users?offset=1&count=2
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public AppResponse getLandlords(@Context HttpHeaders headers, @QueryParam("sortby") String sortby, @QueryParam("offset") Integer offset,
-                                @QueryParam("count") Integer count){
+    public AppResponse getLandlords(@Context HttpHeaders headers,
+                                    @QueryParam("filter") String filter,
+                                    @QueryParam("sortby") String sortby,
+                                    @QueryParam("offset") Integer offset,
+                                    @QueryParam("count") Integer count){
         try{
             AppLogger.info("Got an API call");
-            ArrayList<Landlord> landlords = null;
-
-//            if(sortby != null)
-//                landlords = LandlordManager.getInstance().getLandlordList(sortby);
-//            else if(offset != null && count != null)
-//                users = UserManager.getInstance().getUserListPaginated(offset, count);
-//            else
+            List<Landlord> landlords = null;
             landlords = LandlordManager.getInstance().getLandlordList();
 
-            if(landlords != null)
+            if(landlords != null) {
+                if (filter != null){
+                    switch (filter){
+                        case "enabled":
+                            landlords = landlords.stream()
+                                    .filter(l -> l.getSubLeaseAuth().equals(Boolean.TRUE))
+                                    .collect(Collectors.toList());
+                    }
+                }
+
+                if (sortby != null) {
+                    Comparator<Landlord> lastNameComparator = Comparator.comparing(Landlord::getLastName);
+                    Comparator<Landlord> lastNameComparatorReversed = Comparator.comparing(Landlord::getLastName).reversed();
+                    // Can add other sortby fields
+                    switch (sortby){
+                        case "lastName":
+                            landlords = landlords.stream()
+                                    .sorted(lastNameComparator)
+                                    .collect(Collectors.toList());
+                            break;
+                    }
+                }
+
+                if(offset != null && count != null) {
+                    landlords = landlords.stream()
+                            .skip(offset)
+                            .limit(count)
+                            .collect(Collectors.toList());
+                }
+
+
                 return new AppResponse(landlords);
+            }
             else
                 throw new HttpBadRequestException(0, "Problem with getting landlords");
         }catch (Exception e){
@@ -94,7 +127,45 @@ public class LandlordHttpInterface extends HttpInterface {
         }catch (Exception e){
             throw handleException("GET /landlords/{landlordId}", e);
         }
-
-
     }
+
+    @PATCH
+    @Path("/{landlordId}")
+    @Consumes({ MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON})
+    public AppResponse patchLandlords(Object request, @PathParam("landlordId") String landlordId){
+
+        JSONObject json = null;
+
+        try{
+            json = new JSONObject(ow.writeValueAsString(request));
+            Landlord landlord = new Landlord(
+                    json.getString("firstName"),
+                    json.getString("lastName"),
+                    json.getString("phoneNumber"),
+                    json.getBoolean("subLeaseAuth"),
+                    json.getString("bankAccountNumber")
+            );
+            landlord.setId(landlordId);
+            LandlordManager.getInstance().updateLandlord(landlord);
+
+        }catch (Exception e){
+            throw handleException("PATCH landlords/{landlordId}", e);
+        }
+        return new AppResponse("Update Successful");
+    }
+
+    @DELETE
+    @Path("/{landlordId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse deleteLandlords(@PathParam("landlordId") String landlordId){
+        try{
+            LandlordManager.getInstance().deleteLandlord(landlordId);
+            return new AppResponse("Delete Successful");
+        }catch (Exception e){
+            throw handleException("DELETE landlords/{landlordId}", e);
+        }
+    }
+
 }

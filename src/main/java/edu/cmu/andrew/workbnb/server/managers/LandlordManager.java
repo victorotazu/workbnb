@@ -5,7 +5,6 @@ import com.mongodb.client.MongoCollection;
 import edu.cmu.andrew.workbnb.server.exceptions.AppException;
 import edu.cmu.andrew.workbnb.server.exceptions.AppInternalServerException;
 import edu.cmu.andrew.workbnb.server.models.Landlord;
-import edu.cmu.andrew.workbnb.server.models.User;
 import edu.cmu.andrew.workbnb.server.utils.MongoPool;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -13,13 +12,14 @@ import org.bson.types.ObjectId;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LandlordManager extends Manager {
 
     public static LandlordManager _self;
     private MongoCollection<Document> landlordCollection;
 
-    public () {
+    public LandlordManager() {
         this.landlordCollection = MongoPool.getInstance().getCollection("landlords");
     }
 
@@ -39,7 +39,7 @@ public class LandlordManager extends Manager {
                     .append("lastName", landlord.getLastName())
                     .append("phoneNumber", landlord.getPhoneNumber())
                     .append("bankAccountNumber", landlord.getBankAccountNumber())
-                    .append("subleaseAuth", landlord.getSubLeaseAuth()));
+                    .append("subleaseAuth", landlord.getSubLeaseAuth());
             if (newDoc != null)
                 landlordCollection.insertOne(newDoc);
             else
@@ -58,7 +58,7 @@ public class LandlordManager extends Manager {
                     .append("lastName", landlord.getLastName())
                     .append("phoneNumber", landlord.getPhoneNumber())
                     .append("bankAccountNumber", landlord.getBankAccountNumber())
-                    .append("subleaseAuth", landlord.getSubLeaseAuth()));
+                    .append("subleaseAuth", landlord.getSubLeaseAuth());
             Bson updateOperationDocument = new Document("$set", newValue);
 
             if (newValue != null)
@@ -80,9 +80,10 @@ public class LandlordManager extends Manager {
         }
     }
 
-    public ArrayList<Landlord> getLandlordList() throws AppException {
+    public List<Landlord> getLandlordList() throws AppException {
+        List<Landlord> landlordList;
         try{
-            ArrayList<Landlord> landlordList = new ArrayList<>();
+            landlordList = new ArrayList<>();
             FindIterable<Document> landlordDocs = landlordCollection.find();
 
             for(Document landlordDoc: landlordDocs) {
@@ -93,11 +94,12 @@ public class LandlordManager extends Manager {
                         landlordDoc.getBoolean("subleaseAuth"),
                         landlordDoc.getString("bankAccountNumber")
                 );
-                landlord.setId(landlordDoc.getString("_id"));
+                landlord.setId(landlordDoc.getObjectId("_id").toString());
                 landlordList.add(landlord);
             }
-            return new ArrayList<>(landlordList);
-        } catch(Exception e){
+            return landlordList;
+            }
+         catch(Exception e){
             throw handleException("Get Landlord List", e);
         }
     }
@@ -116,7 +118,7 @@ public class LandlordManager extends Manager {
                             landlordDoc.getBoolean("subleaseAuth"),
                             landlordDoc.getString("bankAccountNumber")
                     );
-                    landlord.setId(landlordDoc.getString("_id"));
+                    landlord.setId(landlordDoc.getObjectId("_id").toString());
                     landlordList.add(landlord);
                 }
             }

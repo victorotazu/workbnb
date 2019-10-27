@@ -14,7 +14,7 @@ public class Config {
     private static HashMap<String, Object> currentConfig = new HashMap<>();
 
 
-    public static final String database = "database";
+    public static final String database = "workbnbDB";
     public static final int dbPort = 27017;
     public static final String dbHost = "localhost";
     public static String verion = "0.1.1";
