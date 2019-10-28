@@ -64,6 +64,7 @@ public class LandlordHttpInterface extends HttpInterface {
     public AppResponse getLandlords(@Context HttpHeaders headers,
                                     @QueryParam("filter") String filter,
                                     @QueryParam("sortby") String sortby,
+                                    @DefaultValue("ASC") @QueryParam("direction") String direction,
                                     @QueryParam("offset") Integer offset,
                                     @QueryParam("count") Integer count){
         try{
@@ -88,7 +89,7 @@ public class LandlordHttpInterface extends HttpInterface {
                     switch (sortby){
                         case "lastName":
                             landlords = landlords.stream()
-                                    .sorted(lastNameComparator)
+                                    .sorted(direction.equals("DESC") ? lastNameComparatorReversed : lastNameComparator)
                                     .collect(Collectors.toList());
                             break;
                     }
@@ -143,7 +144,7 @@ public class LandlordHttpInterface extends HttpInterface {
                     json.getString("firstName"),
                     json.getString("lastName"),
                     json.getString("phoneNumber"),
-                    json.getBoolean("subLeaseAuth"),
+                    json.getBoolean("subleaseAuth"),
                     json.getString("bankAccountNumber")
             );
             landlord.setId(landlordId);
