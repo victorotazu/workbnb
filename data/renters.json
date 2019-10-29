@@ -1,0 +1,10 @@
+[
+{"_id":{"$oid":"5db8ae55baf8fe048c50ea00"},"firstName":"Bill","lastName":"Gates","email":"bill.gates@microsoft.com","phoneNumber":"1234567890","industry":"Technology","bankAccountNumber":"123456789012"},
+{"_id":{"$oid":"5db8af15baf8fe048c50ea01"},"firstName":"Sundar","lastName":"Pichai","email":"sundar.pichai@google.com","phoneNumber":"2345678901","industry":"Technology","bankAccountNumber":"234567890123"},
+{"_id":{"$oid":"5db8afaabaf8fe048c50ea02"},"firstName":"Satya","lastName":"Nadella","email":"satya.nadella@microsoft.com","phoneNumber":"3456789012","industry":"Technology","bankAccountNumber":"345678901234"},
+{"_id":{"$oid":"5db8affebaf8fe048c50ea03"},"firstName":"Tim","lastName":"Cook","email":"tim.cook@apple.com","phoneNumber":"4567890123","industry":"Technology","bankAccountNumber":"456789012345"},
+{"_id":{"$oid":"5db8b04abaf8fe048c50ea04"},"firstName":"Jeff","lastName":"Bezos","email":"jeff.bezos@amazon.com","phoneNumber":"5678901234","industry":"Software","bankAccountNumber":"567890123456"},
+{"_id":{"$oid":"5db8b097baf8fe048c50ea05"},"firstName":"Mark","lastName":"Zuckerburg","email":"mark.zuckerburg@facebook.com","phoneNumber":"6789012345","industry":"Software","bankAccountNumber":"678901234567"},
+{"_id":{"$oid":"5db8b0e2baf8fe048c50ea06"},"firstName":"Elon","lastName":"Musk","email":"elon.musk@tesla.com","phoneNumber":"7890123456","industry":"Technology","bankAccountNumber":"789012345678"},
+{"_id":{"$oid":"5db8b12dbaf8fe048c50ea07"},"firstName":"Larry","lastName":"Ellison","email":"larry.ellison@oracle.com","phoneNumber":"8901234567","industry":"Software","bankAccountNumber":"890123456789"}
+]
