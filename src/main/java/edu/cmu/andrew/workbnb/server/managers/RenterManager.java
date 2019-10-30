@@ -6,7 +6,6 @@ import com.mongodb.client.MongoCollection;
 import edu.cmu.andrew.workbnb.server.exceptions.AppException;
 import edu.cmu.andrew.workbnb.server.exceptions.AppInternalServerException;
 import edu.cmu.andrew.workbnb.server.models.Renter;
-import edu.cmu.andrew.workbnb.server.models.User;
 import edu.cmu.andrew.workbnb.server.utils.MongoPool;
 import org.bson.Document;
 import org.bson.conversions.Bson;
