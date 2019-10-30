@@ -31,7 +31,7 @@ public class MongoPool {
             MongoClientOptions opts = builder.build();
 
             MongoClient mc = new MongoClient(new ServerAddress(Config.dbHost, Config.dbPort));
-            db = mc.getDatabase(Config.database);
+            this.db = mc.getDatabase("workbnbDB");
             Logger.getLogger("org.mongodb.driver").setLevel(Level.WARNING);
         } catch (Exception e) {
             AppLogger.error("From MongoPool creation ",e);
