@@ -1,19 +1,27 @@
 package edu.cmu.andrew.workbnb.server.models;
 
 public class Renter {
+    String id;
     String firstName;
     String lastName;
+    String email;
     String phoneNumber;
     String industry;
     String bankAccountNumber;
 
-    public Renter(String firstName, String lastName, String phoneNumber, String industry, String bankAccountNumber) {
+    public Renter(String id, String firstName, String lastName, String email, String phoneNumber, String industry, String bankAccountNumber) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.industry = industry;
         this.bankAccountNumber = bankAccountNumber;
     }
+
+    public String getId() { return id; }
+
+    public void setId(String id) { this.id = id; }
 
     public String getFirstName() {
         return firstName;
@@ -29,6 +37,12 @@ public class Renter {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPhoneNumber() {
