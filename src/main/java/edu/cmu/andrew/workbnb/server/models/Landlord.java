@@ -1,6 +1,7 @@
 package edu.cmu.andrew.workbnb.server.models;
 
 public class Landlord {
+    String id;
     String firstName;
     String lastName;
     String phoneNumber;
@@ -13,6 +14,14 @@ public class Landlord {
         this.phoneNumber = phoneNumber;
         this.subLeaseAuth = subLeaseAuth;
         this.bankAccountNumber = bankAccountNumber;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getFirstName() {

@@ -1,0 +1,6 @@
+[
+{"_id":{"$oid":"5db5debc61bd352b5ceee8f6"},"firstName":"John","lastName":"Smith","phoneNumber":"6691237890","bankAccountNumber":"440982234234809","subleaseAuth":true},
+{"_id":{"$oid":"5db5df2161bd352b5ceee8f7"},"firstName":"George","lastName":"Bush","phoneNumber":"7432432423","bankAccountNumber":"2244533423523","subleaseAuth":true},
+{"_id":{"$oid":"5db5df9e61bd352b5ceee8f8"},"firstName":"Bill","lastName":"Clinton","phoneNumber":"4235459083","bankAccountNumber":"534534554645643","subleaseAuth":true},
+{"_id":{"$oid":"5db5e3d861bd352b5ceee8f9"},"firstName":"Barack","lastName":"Obama","phoneNumber":"24423423423","bankAccountNumber":"23423423435435","subleaseAuth":false}
+]
