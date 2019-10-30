@@ -22,6 +22,8 @@ public class Config {
     public static String logLevel = "ERROR";
     public static String logName = "AppLog";
 
+    public static final String dataPath = "D:\\DevProjects\\cmu\\workbnb\\data";
+
 
 
 
