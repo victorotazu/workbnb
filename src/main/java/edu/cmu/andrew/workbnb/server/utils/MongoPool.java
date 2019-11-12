@@ -1,9 +1,6 @@
 package edu.cmu.andrew.workbnb.server.utils;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
@@ -30,7 +27,10 @@ public class MongoPool {
             builder.connectTimeout(30000);
             MongoClientOptions opts = builder.build();
 
-            MongoClient mc = new MongoClient(new ServerAddress(Config.dbHost, Config.dbPort));
+            String mongoUri = String.format(Config.uri, Config.username, Config.password);
+            MongoClientURI uri = new MongoClientURI(mongoUri);
+            MongoClient mc = new MongoClient(uri);
+            //MongoClient mc = new MongoClient(new ServerAddress(Config.dbHost, Config.dbPort));
             this.db = mc.getDatabase(Config.database);
             Logger.getLogger("org.mongodb.driver").setLevel(Level.WARNING);
         } catch (Exception e) {
