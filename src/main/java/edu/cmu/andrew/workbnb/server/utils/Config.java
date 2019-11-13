@@ -25,8 +25,4 @@ public class Config {
     public static String password = "";
 
     public static final String dataPath = "D:\\DevProjects\\cmu\\workbnb\\data";
-
-
-
-
 }
