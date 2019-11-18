@@ -5,13 +5,16 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import edu.cmu.andrew.workbnb.server.exceptions.AppException;
 import edu.cmu.andrew.workbnb.server.exceptions.AppInternalServerException;
+import edu.cmu.andrew.workbnb.server.exceptions.AppUnauthorizedException;
 import edu.cmu.andrew.workbnb.server.models.Renter;
+import edu.cmu.andrew.workbnb.server.models.Session;
 import edu.cmu.andrew.workbnb.server.utils.MongoPool;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 
+import javax.ws.rs.core.HttpHeaders;
 import java.util.ArrayList;
 
 public class RenterManager extends Manager{
@@ -30,9 +33,11 @@ public class RenterManager extends Manager{
         return _self;
     }
 
-    public void createRenter(Renter renter) throws AppException {
+    public void createRenter(HttpHeaders headers, Renter renter) throws AppException {
 
         try{
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
+
             JSONObject json = new JSONObject(renter);
 
             Document newDoc = new Document()
@@ -41,7 +46,8 @@ public class RenterManager extends Manager{
                     .append("email",renter.getEmail())
                     .append("phoneNumber",renter.getPhoneNumber())
                     .append("industry",renter.getIndustry())
-                    .append("bankAccountNumber",renter.getBankAccountNumber());
+                    .append("bankAccountNumber",renter.getBankAccountNumber())
+                    .append("userId", session.getUserId());
             if (newDoc != null)
                 renterCollection.insertOne(newDoc);
             else
@@ -50,12 +56,14 @@ public class RenterManager extends Manager{
         }catch(Exception e){
             throw handleException("Create Renter", e);
         }
-
     }
 
-    public void updateRenter(Renter renter) throws AppException {
+    public void updateRenter(HttpHeaders headers, Renter renter) throws AppException {
         try {
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
 
+            if (!session.getUserId().equals(renter.getUserId()))
+                throw new AppUnauthorizedException(70, "Invalid user id");
 
             Bson filter = new Document("_id", new ObjectId(renter.getId()));
             Bson newValue = new Document()
@@ -77,8 +85,13 @@ public class RenterManager extends Manager{
         }
     }
 
-    public void deleteRenter(String renterId) throws AppException {
+    public void deleteRenter(HttpHeaders headers, String renterId) throws AppException {
         try {
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
+
+            if (!session.getUserId().equals(renterId))
+                throw new AppUnauthorizedException(70, "Invalid user id");
+
             Bson filter = new Document("_id", new ObjectId(renterId));
             renterCollection.deleteOne(filter);
         }catch (Exception e){

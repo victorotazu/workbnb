@@ -81,15 +81,15 @@ public class SessionManager {
 
     }
 
-
     private User convertDocumentToUser(Document item) {
         User user = new User( item.getObjectId("_id").toString(),
                 item.getString("username"),
-                item.getString("password"),
                 item.getString("email")
         );
+        user.setPassword(item.getString("password"));
         return user;
     }
+
     public Session getSessionForToken(HttpHeaders headers) throws Exception{
         List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
         if (authHeaders == null)

@@ -21,7 +21,7 @@ public class Config {
     public static String logFile = "C:/Users/avj38/app.log";
     public static String logLevel = "ERROR";
     public static String logName = "AppLog";
-    public static String username = "";
+    public static String username = "admin";
     public static String password = "";
 
     public static final String dataPath = "D:\\DevProjects\\cmu\\workbnb\\data";

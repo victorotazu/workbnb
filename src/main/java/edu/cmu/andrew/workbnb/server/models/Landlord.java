@@ -7,6 +7,7 @@ public class Landlord {
     String phoneNumber;
     Boolean subLeaseAuth;
     String bankAccountNumber;
+    String userId;
 
     public Landlord(String firstName, String lastName, String phoneNumber, Boolean subLeaseAuth, String bankAccountNumber) {
         this.firstName = firstName;
@@ -64,4 +65,11 @@ public class Landlord {
         this.bankAccountNumber = bankAccountNumber;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

@@ -35,7 +35,7 @@ public class RenterInterface extends HttpInterface {
         @POST
         @Consumes({MediaType.APPLICATION_JSON})
         @Produces({MediaType.APPLICATION_JSON})
-        public AppResponse postRenters(Object request) {
+        public AppResponse postRenters(@Context HttpHeaders headers, Object request) {
 
             try {
                 JSONObject json = null;
@@ -50,7 +50,8 @@ public class RenterInterface extends HttpInterface {
                         json.getString("industry"),
                         json.getString("bankAccountNumber")
                 );
-                RenterManager.getInstance().createRenter(newRenter);
+
+                RenterManager.getInstance().createRenter(headers, newRenter);
                 return new AppResponse("Insert Successful");
 
             } catch (Exception e) {
@@ -58,9 +59,6 @@ public class RenterInterface extends HttpInterface {
             }
 
         }
-
-
-
 
     //Sorting: http://localhost:8080/api/users?sortby=riderBalance
     //Pagination: http://localhost:8080/api/users?offset=1&count=2
@@ -144,7 +142,7 @@ public class RenterInterface extends HttpInterface {
     @Path("/{renterId}")
     @Consumes({ MediaType.APPLICATION_JSON})
     @Produces({ MediaType.APPLICATION_JSON})
-    public AppResponse patchRenters(Object request, @PathParam("renterId") String renterId){
+    public AppResponse patchRenters(@Context HttpHeaders headers, Object request, @PathParam("renterId") String renterId){
 
         JSONObject json = null;
 
@@ -160,7 +158,9 @@ public class RenterInterface extends HttpInterface {
                     json.getString("bankAccountNumber")
             );
             renter.setId(renterId);
-            RenterManager.getInstance().updateRenter(renter);
+            renter.setUserId(RenterManager.getInstance().getRenterById(renterId).get(0).getUserId());
+
+            RenterManager.getInstance().updateRenter(headers, renter);
 
         }catch (Exception e){
             throw handleException("PATCH renters/{renterId}", e);
@@ -172,9 +172,9 @@ public class RenterInterface extends HttpInterface {
     @Path("/{renterId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public AppResponse deleteRenters(@PathParam("renterId") String renterId){
+    public AppResponse deleteRenters(@Context HttpHeaders headers, @PathParam("renterId") String renterId){
         try{
-            RenterManager.getInstance().deleteRenter(renterId);
+            RenterManager.getInstance().deleteRenter(headers,renterId);
             return new AppResponse("Delete Successful");
         }catch (Exception e){
             throw handleException("DELETE renters/{renterId}", e);

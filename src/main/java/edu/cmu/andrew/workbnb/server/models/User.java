@@ -7,10 +7,9 @@ public class User {
     String password = null;
     String email = null;
 
-    public User(String id, String username, String password, String email) {
+    public User(String id, String username, String email) {
         this.id = id;
         this.username = username;
-        this.password = password;
         this.email = email;
     }
 
@@ -29,4 +28,8 @@ public class User {
     }
 
     public String getPassword() { return password; }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
