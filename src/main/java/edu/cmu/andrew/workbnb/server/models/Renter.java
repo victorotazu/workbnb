@@ -8,6 +8,7 @@ public class Renter {
     String phoneNumber;
     String industry;
     String bankAccountNumber;
+    String userId;
 
     public Renter(String id, String firstName, String lastName, String email, String phoneNumber, String industry, String bankAccountNumber) {
         this.id = id;
@@ -67,5 +68,13 @@ public class Renter {
 
     public void setBankAccountNumber(String bankAccountNumber) {
         this.bankAccountNumber = bankAccountNumber;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
