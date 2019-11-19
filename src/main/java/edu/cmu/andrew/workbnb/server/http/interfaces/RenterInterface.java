@@ -8,7 +8,9 @@ import edu.cmu.andrew.workbnb.server.http.exceptions.HttpBadRequestException;
 import edu.cmu.andrew.workbnb.server.http.responses.AppResponse;
 import edu.cmu.andrew.workbnb.server.http.utils.PATCH;
 import edu.cmu.andrew.workbnb.server.managers.RenterManager;
+import edu.cmu.andrew.workbnb.server.managers.ReservationManager;
 import edu.cmu.andrew.workbnb.server.models.Renter;
+import edu.cmu.andrew.workbnb.server.models.Reservation;
 import edu.cmu.andrew.workbnb.server.utils.AppLogger;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -179,6 +181,32 @@ public class RenterInterface extends HttpInterface {
         }catch (Exception e){
             throw handleException("DELETE renters/{renterId}", e);
         }
+    }
+
+    @POST
+    @Path("/{renterId}/reservation")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse createReservation(@Context HttpHeaders headers, @PathParam("renterId") String renterId, Object request){
+        try {
+            JSONObject json = null;
+            json = new JSONObject(ow.writeValueAsString(request));
+
+            Reservation newReservation = new Reservation(
+                    renterId,
+                    json.getString("landlordId"),
+                    json.getString("listingId"),
+                    json.getInt("duration"),
+                    json.getDouble("price")
+            );
+
+            ReservationManager.getInstance().createReservation(headers, newReservation);
+            return new AppResponse("Insert Successful");
+
+        } catch (Exception e) {
+            throw handleException("POST reservations", e);
+        }
+
     }
 
 }
