@@ -185,6 +185,7 @@ public class RenterManager extends Manager{
                             renterDoc.getString("industry"),
                             renterDoc.getString("bankAccountNumber")
                     );
+                    renter.setUserId(renterDoc.getString("userId"));
                     renterList.add(renter);
                 }
             }

@@ -137,6 +137,7 @@ public class LandlordManager extends Manager {
                             landlordDoc.getString("bankAccountNumber")
                     );
                     landlord.setId(landlordDoc.getObjectId("_id").toString());
+                    landlord.setUserId(landlordDoc.getString("userId"));
                     landlordList.add(landlord);
                 }
             }
