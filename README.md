@@ -1,20 +1,10 @@
 # workbnb
 
 ## Instructions
-
-### To reset the database
-1. Go to utils.Config
-2. Set `dataPath` with the location of the `*.json` files, i.e. "D:\\DevProjects\\cmu\\workbnb\\data";
-3. Set logFile static variable, i.e. = "C:/Users/avj38/app.log";
-4. Make a `POST` request to http://localhost:8080/api/admin/reset
-
-### To run the project
-1. A database named `workbnbDB` should exist locally.
-2. Reseting the database will create all required collections.
-
+Our database is hosted in mongodb atlas. It's public and we'll send the username and password separately.
 ## Assignment details
 
-1. Victor: landlords api
-2. Aman: renters api
+1. Victor: landlords api, sessions, reservations
+2. Aman: renters api, listings
 
-Link to document: https://docs.google.com/document/d/1_j8-Qk3HIAeMFkBEaGNUwb1FwrNtTcS6B1iW4q9-B8c/edit?usp=sharings
+Link to document:   https://docs.google.com/document/d/1S2qZ4OMvRSMKqslR05gFkSDhTvcWNV7Xw135QyK39u0/edit?usp=sharing
