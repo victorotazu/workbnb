@@ -1,9 +1,9 @@
 package edu.cmu.andrew.workbnb.server.http.interfaces;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.mongodb.client.MongoCollection;
+import com.sun.net.httpserver.Headers;
 import edu.cmu.andrew.workbnb.server.http.exceptions.HttpBadRequestException;
 import edu.cmu.andrew.workbnb.server.http.responses.AppResponse;
 import edu.cmu.andrew.workbnb.server.http.utils.PATCH;
@@ -20,7 +20,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ public class LandlordHttpInterface extends HttpInterface {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public AppResponse postLandlords(Object request) {
+    public AppResponse postLandlords(@Context HttpHeaders headers, Object request) {
         try{
             JSONObject json = null;
             json = new JSONObject(ow.writeValueAsString(request));
@@ -49,7 +48,7 @@ public class LandlordHttpInterface extends HttpInterface {
                     json.getBoolean("subleaseAuth"),
                     json.getString("bankAccountNumber")
             );
-            LandlordManager.getInstance().createLandlord(newLandlord);
+            LandlordManager.getInstance().createLandlord(headers, newLandlord);
             return new AppResponse("Insert Successful");
 
         } catch (Exception e) {
@@ -134,7 +133,7 @@ public class LandlordHttpInterface extends HttpInterface {
     @Path("/{landlordId}")
     @Consumes({ MediaType.APPLICATION_JSON})
     @Produces({ MediaType.APPLICATION_JSON})
-    public AppResponse patchLandlords(Object request, @PathParam("landlordId") String landlordId){
+    public AppResponse patchLandlords(@Context HttpHeaders headers, Object request, @PathParam("landlordId") String landlordId){
 
         JSONObject json = null;
 
@@ -148,7 +147,9 @@ public class LandlordHttpInterface extends HttpInterface {
                     json.getString("bankAccountNumber")
             );
             landlord.setId(landlordId);
-            LandlordManager.getInstance().updateLandlord(landlord);
+            landlord.setUserId(LandlordManager.getInstance().getLandlordById(landlordId).get(0).getUserId());
+
+            LandlordManager.getInstance().updateLandlord(headers, landlord);
 
         }catch (Exception e){
             throw handleException("PATCH landlords/{landlordId}", e);
@@ -160,9 +161,9 @@ public class LandlordHttpInterface extends HttpInterface {
     @Path("/{landlordId}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public AppResponse deleteLandlords(@PathParam("landlordId") String landlordId){
+    public AppResponse deleteLandlords(@Context HttpHeaders headers, @PathParam("landlordId") String landlordId){
         try{
-            LandlordManager.getInstance().deleteLandlord(landlordId);
+            LandlordManager.getInstance().deleteLandlord(headers, landlordId);
             return new AppResponse("Delete Successful");
         }catch (Exception e){
             throw handleException("DELETE landlords/{landlordId}", e);

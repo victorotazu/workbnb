@@ -4,13 +4,16 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import edu.cmu.andrew.workbnb.server.exceptions.AppException;
 import edu.cmu.andrew.workbnb.server.exceptions.AppInternalServerException;
+import edu.cmu.andrew.workbnb.server.exceptions.AppUnauthorizedException;
 import edu.cmu.andrew.workbnb.server.models.Landlord;
+import edu.cmu.andrew.workbnb.server.models.Session;
 import edu.cmu.andrew.workbnb.server.utils.MongoPool;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 
+import javax.ws.rs.core.HttpHeaders;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +32,11 @@ public class LandlordManager extends Manager {
         return _self;
     }
 
-    public void createLandlord(Landlord landlord) throws AppException {
+    public void createLandlord(HttpHeaders headers, Landlord landlord) throws AppException {
 
         try{
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
+
             JSONObject json = new JSONObject(landlord);
 
             Document newDoc = new Document()
@@ -39,7 +44,9 @@ public class LandlordManager extends Manager {
                     .append("lastName", landlord.getLastName())
                     .append("phoneNumber", landlord.getPhoneNumber())
                     .append("bankAccountNumber", landlord.getBankAccountNumber())
-                    .append("subleaseAuth", landlord.getSubLeaseAuth());
+                    .append("subleaseAuth", landlord.getSubLeaseAuth())
+                    .append("userId", session.getUserId());
+
             if (newDoc != null)
                 landlordCollection.insertOne(newDoc);
             else
@@ -50,15 +57,21 @@ public class LandlordManager extends Manager {
         }
     }
 
-    public void updateLandlord(Landlord landlord) throws AppException {
+    public void updateLandlord(HttpHeaders headers, Landlord landlord) throws AppException {
         try {
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
+
+            if (!session.getUserId().equals(landlord.getUserId()))
+                throw new AppUnauthorizedException(70, "Invalid user id");
+
             Bson filter = new Document("_id", new ObjectId(landlord.getId()));
             Bson newValue = new Document()
                     .append("firstName", landlord.getFirstName())
                     .append("lastName", landlord.getLastName())
                     .append("phoneNumber", landlord.getPhoneNumber())
                     .append("bankAccountNumber", landlord.getBankAccountNumber())
-                    .append("subleaseAuth", landlord.getSubLeaseAuth());
+                    .append("subleaseAuth", landlord.getSubLeaseAuth())
+                    .append("userId", landlord.getUserId());
             Bson updateOperationDocument = new Document("$set", newValue);
 
             if (newValue != null)
@@ -71,8 +84,13 @@ public class LandlordManager extends Manager {
         }
     }
 
-    public void deleteLandlord(String landlordId) throws AppException {
+    public void deleteLandlord(HttpHeaders headers, String landlordId) throws AppException {
         try {
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
+
+            if (!session.getUserId().equals(landlordId))
+                throw new AppUnauthorizedException(70, "Invalid user id");
+
             Bson filter = new Document("_id", new ObjectId(landlordId));
             landlordCollection.deleteOne(filter);
         }catch (Exception e){
@@ -119,6 +137,7 @@ public class LandlordManager extends Manager {
                             landlordDoc.getString("bankAccountNumber")
                     );
                     landlord.setId(landlordDoc.getObjectId("_id").toString());
+                    landlord.setUserId(landlordDoc.getString("userId"));
                     landlordList.add(landlord);
                 }
             }
