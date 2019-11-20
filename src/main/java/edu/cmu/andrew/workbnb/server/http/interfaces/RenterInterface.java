@@ -8,7 +8,9 @@ import edu.cmu.andrew.workbnb.server.http.exceptions.HttpBadRequestException;
 import edu.cmu.andrew.workbnb.server.http.responses.AppResponse;
 import edu.cmu.andrew.workbnb.server.http.utils.PATCH;
 import edu.cmu.andrew.workbnb.server.managers.RenterManager;
+import edu.cmu.andrew.workbnb.server.managers.ReservationManager;
 import edu.cmu.andrew.workbnb.server.models.Renter;
+import edu.cmu.andrew.workbnb.server.models.Reservation;
 import edu.cmu.andrew.workbnb.server.utils.AppLogger;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -180,5 +182,115 @@ public class RenterInterface extends HttpInterface {
             throw handleException("DELETE renters/{renterId}", e);
         }
     }
+    // Reservations
+    @POST
+    @Path("/{renterId}/reservations")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse createReservation(@Context HttpHeaders headers, @PathParam("renterId") String renterId, Object request){
+        try {
+            JSONObject json = null;
+            json = new JSONObject(ow.writeValueAsString(request));
+
+            Reservation newReservation = new Reservation(
+                    renterId,
+                    json.getString("landlordId"),
+                    json.getString("listingId"),
+                    json.getInt("duration"),
+                    json.getDouble("price")
+            );
+
+            ReservationManager.getInstance().createReservation(headers, newReservation);
+            return new AppResponse("Insert Successful");
+
+        } catch (Exception e) {
+            throw handleException("POST reservations", e);
+        }
+    }
+
+    @GET
+    @Path("/{renterId}/reservations")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse getReservations(@Context HttpHeaders headers, @PathParam("renterId") String renterId){
+        try{
+            AppLogger.info("Got an API call");
+            List<Reservation> reservations = ReservationManager.getInstance().getReservationsByRenter(renterId);
+
+            if(reservations != null)
+                return new AppResponse(reservations);
+            else
+                throw new HttpBadRequestException(0, "Problem with getting reservations");
+        }catch (Exception e){
+            throw handleException("GET /renters/{renterId}/reservations", e);
+        }
+    }
+
+    @GET
+    @Path("/{renterId}/reservations/{reservationId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse getReservationById(@Context HttpHeaders headers,
+                                          @PathParam("renterId") String renterId,
+                                          @PathParam("reservationId") String reservationId){
+        try{
+            AppLogger.info("Got an API call");
+            Reservation reservation = ReservationManager.getInstance().
+                    getReservationsById(reservationId);
+
+            if(reservation != null)
+                return new AppResponse(reservation);
+            else
+                throw new HttpBadRequestException(0, "Problem with getting reservation");
+        }catch (Exception e){
+            throw handleException("GET /renters/{renterId}/reservations/{reservationId}", e);
+        }
+    }
+
+    @PATCH
+    @Path("/{renterId}/reservations/{reservationId}")
+    @Consumes({ MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON})
+    public AppResponse patchReservations(@Context HttpHeaders headers,
+                                         Object request,
+                                         @PathParam("renterId") String renterId,
+                                         @PathParam("renterId") String reservationId){
+
+        JSONObject json = null;
+
+        try{
+            json = new JSONObject(ow.writeValueAsString(request));
+            Reservation newReservation = new Reservation(
+                    renterId,
+                    json.getString("landlordId"),
+                    json.getString("listingId"),
+                    json.getInt("duration"),
+                    json.getDouble("price")
+            );
+            newReservation.setId(reservationId);
+
+            ReservationManager.getInstance().updateReservation(headers, renterId, newReservation);
+
+        }catch (Exception e){
+            throw handleException("PATCH renters/{renterId}", e);
+        }
+        return new AppResponse("Update Successful");
+    }
+
+    @DELETE
+    @Path("/{renterId}/reservations/{reservationId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse deleteReservation(@Context HttpHeaders headers,
+                                         @PathParam("renterId") String renterId,
+                                         @PathParam("reservationId") String reservationId){
+        try{
+            ReservationManager.getInstance().deleteReservation(headers,reservationId);
+            return new AppResponse("Delete Successful");
+        }catch (Exception e){
+            throw handleException("DELETE renters/{renterId}/reservation/{reservationId}", e);
+        }
+    }
+
 
 }
