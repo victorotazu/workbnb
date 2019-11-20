@@ -8,7 +8,9 @@ import edu.cmu.andrew.workbnb.server.http.exceptions.HttpBadRequestException;
 import edu.cmu.andrew.workbnb.server.http.responses.AppResponse;
 import edu.cmu.andrew.workbnb.server.http.utils.PATCH;
 import edu.cmu.andrew.workbnb.server.managers.LandlordManager;
+import edu.cmu.andrew.workbnb.server.managers.ListingManager;
 import edu.cmu.andrew.workbnb.server.models.Landlord;
+import edu.cmu.andrew.workbnb.server.models.Listing;
 import edu.cmu.andrew.workbnb.server.utils.AppLogger;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -167,4 +169,158 @@ public class LandlordHttpInterface extends HttpInterface {
             throw handleException("DELETE landlords/{landlordId}", e);
         }
     }
+
+
+    @POST
+    @Path("/{landlordId}/listings")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public AppResponse postListings(@PathParam("landlordId") String landlordId, Object request) {
+
+        try {
+            JSONObject json = null;
+            json = new JSONObject(ow.writeValueAsString(request));
+
+            Listing newListing = new Listing(
+                    null,
+                    landlordId,
+                    json.getString("address"),
+                    json.getString("type"),
+                    json.getString("images"),
+                    json.getDouble("price"),
+                    json.getString("availability"),
+                    json.getString("details")
+            );
+            ListingManager.getInstance().createListing(newListing);
+            return new AppResponse("Insert Successful");
+
+        } catch (Exception e) {
+            throw handleException("POST listings", e);
+        }
+
+    }
+
+    //Sorting: http://localhost:8080/api/users?sortby=riderBalance
+    //Pagination: http://localhost:8080/api/users?offset=1&count=2
+    @GET
+    @Path("/{landlordId}/listings")
+    @Produces({MediaType.APPLICATION_JSON})
+    public AppResponse getListings(@Context HttpHeaders headers,
+                                   @QueryParam("filter") String filter,
+                                   @QueryParam("sortby") String sortby,
+                                   @DefaultValue("ASC") @QueryParam("direction") String direction,
+                                   @QueryParam("offset") Integer offset,
+                                   @QueryParam("count") Integer count){
+        try{
+            AppLogger.info("Got an API call");
+            List<Listing> listings = null;
+            listings = ListingManager.getInstance().getListingList();
+
+            if(listings != null) {
+                if(filter!= null) {
+                    switch (filter){
+                        case "Cubicle":
+                            listings = listings.stream()
+                                    .filter(str -> str.getType().equals("Cubicle"))
+                                    .collect(Collectors.toList());
+                            break;
+
+                        case "Conference":
+                            listings = listings.stream()
+                                    .filter(str -> str.getType().equals("Conference"))
+                                    .collect(Collectors.toList());
+                    }
+                }
+
+                if (sortby != null) {
+                    Comparator<Listing> priceComparator = Comparator.comparing(Listing::getPrice);
+                    Comparator<Listing> priceComparatorReversed = Comparator.comparing(Listing::getPrice).reversed();
+
+                    switch (sortby){
+                        case "price":
+                            listings = listings.stream()
+                                    .sorted(direction.equals("DESC") ? priceComparatorReversed : priceComparator)
+                                    .collect(Collectors.toList());
+                            break;
+                    }
+                }
+
+                if (offset != null && count != null) {
+                    listings = listings.stream()
+                            .skip(offset)
+                            .limit(count)
+                            .collect(Collectors.toList());
+                }
+                return new AppResponse(listings);
+            }
+            else
+                throw new HttpBadRequestException(0, "Problem with getting listings");
+
+        }catch (Exception e){
+            throw handleException("GET /listings", e);
+        }
+    }
+
+    @GET
+    @Path("{landlordId}/listings/{listingId}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public AppResponse getSingleListing(@Context HttpHeaders headers, @PathParam("listingId") String listingId, @PathParam("landlordId") String landlordId){
+
+        try{
+            AppLogger.info("Got an API call");
+            List<Listing> listings = ListingManager.getInstance().getListingById(listingId);
+
+            if(listings != null)
+                return new AppResponse(listings);
+            else
+                throw new HttpBadRequestException(0, "Problem with getting listings");
+        }catch (Exception e){
+            throw handleException("GET /listings/{listingId}", e);
+        }
+    }
+
+    @PATCH
+    @Path("{landlordId}/listings/{listingId}")
+    @Consumes({ MediaType.APPLICATION_JSON})
+    @Produces({ MediaType.APPLICATION_JSON})
+    public AppResponse patchListings(Object request, @PathParam("listingId") String listingId, @PathParam("landlordId") String landlordId){
+
+        JSONObject json = null;
+
+        try{
+            json = new JSONObject(ow.writeValueAsString(request));
+            Listing listing = new Listing(
+                    listingId,
+                    landlordId,
+                    json.getString("address"),
+                    json.getString("type"),
+                    json.getString("images"),
+                    json.getDouble("price"),
+                    json.getString("availability"),
+                    json.getString("details")
+            );
+            listing.setId(listingId);
+            ListingManager.getInstance().updateListing(listing);
+
+        }catch (Exception e){
+            throw handleException("PATCH listings/{listingId}", e);
+        }
+        return new AppResponse("Update Successful");
+    }
+
+    @DELETE
+    @Path("{landlordId}/listings/{listingId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AppResponse deleteListings(@PathParam("listingId") String listingId, @PathParam("landlordId") String landlordId){
+        try{
+            ListingManager.getInstance().deleteListing(listingId);
+            return new AppResponse("Delete Successful");
+        }catch (Exception e){
+            throw handleException("DELETE listings/{listingId}", e);
+        }
+    }
+
 }
+
+
