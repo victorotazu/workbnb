@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Path("/payments")
 public class PaymentHttpInterface extends  HttpInterface {
     private ObjectWriter ow;
     private MongoCollection<Document> landlordCollection = null;

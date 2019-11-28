@@ -35,7 +35,7 @@ public class PaymentManager extends Manager {
     public void createPayment(HttpHeaders headers, Payment payment) throws AppException {
 
         try{
-            Session session = SessionManager.getInstance().getSessionForToken(headers);
+            //Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             JSONObject json = new JSONObject(payment);
 
@@ -72,7 +72,7 @@ public class PaymentManager extends Manager {
                     .append("lastModifiedDate", new Date());
             Bson updateOperationDocument = new Document("$set", updatedDoc);
             if (updatedDoc != null)
-                paymentCollection.updateOne(filter, updatedDoc);
+                paymentCollection.updateOne(filter, updateOperationDocument);
             else
                 throw new AppInternalServerException(0, "Failed to update payment");
 
