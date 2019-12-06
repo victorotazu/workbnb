@@ -13,9 +13,7 @@ import edu.cmu.andrew.workbnb.server.managers.PaymentManager;
 
 import edu.cmu.andrew.workbnb.server.managers.RenterManager;
 import edu.cmu.andrew.workbnb.server.managers.ReservationManager;
-import edu.cmu.andrew.workbnb.server.models.Payment;
-import edu.cmu.andrew.workbnb.server.models.Renter;
-import edu.cmu.andrew.workbnb.server.models.Reservation;
+import edu.cmu.andrew.workbnb.server.models.*;
 import edu.cmu.andrew.workbnb.server.utils.AppLogger;
 import edu.cmu.andrew.workbnb.server.utils.Util;
 import org.bson.Document;
