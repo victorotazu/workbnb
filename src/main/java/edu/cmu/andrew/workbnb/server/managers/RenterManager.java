@@ -111,7 +111,8 @@ public class RenterManager extends Manager{
                         renterDoc.getString("email"),
                         renterDoc.getString("phoneNumber"),
                         renterDoc.getString("industry"),
-                        renterDoc.getString("bankAccountNumber")
+                        renterDoc.getString("bankAccountNumber"),
+                        renterDoc.getString("userId")
                 );
                 renter.setId(renterDoc.getObjectId("_id").toString());
                 renterList.add(renter);
@@ -136,7 +137,8 @@ public class RenterManager extends Manager{
                         renterDoc.getString("email"),
                         renterDoc.getString("phoneNumber"),
                         renterDoc.getString("industry"),
-                        renterDoc.getString("bankAccountNumber")
+                        renterDoc.getString("bankAccountNumber"),
+                        renterDoc.getString("userId")
                 );
                 renterList.add(renter);
             }
@@ -160,7 +162,8 @@ public class RenterManager extends Manager{
                         renterDoc.getString("email"),
                         renterDoc.getString("phoneNumber"),
                         renterDoc.getString("industry"),
-                        renterDoc.getString("bankAccountNumber")
+                        renterDoc.getString("bankAccountNumber"),
+                        renterDoc.getString("userId")
                 );
                 renterList.add(renter);
             }
@@ -183,7 +186,8 @@ public class RenterManager extends Manager{
                             renterDoc.getString("email"),
                             renterDoc.getString("phoneNumber"),
                             renterDoc.getString("industry"),
-                            renterDoc.getString("bankAccountNumber")
+                            renterDoc.getString("bankAccountNumber"),
+                            renterDoc.getString("userId")
                     );
                     renter.setUserId(renterDoc.getString("userId"));
                     renterList.add(renter);
