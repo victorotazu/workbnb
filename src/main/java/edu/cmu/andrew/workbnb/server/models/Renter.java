@@ -10,7 +10,7 @@ public class Renter {
     String bankAccountNumber;
     String userId;
 
-    public Renter(String id, String firstName, String lastName, String email, String phoneNumber, String industry, String bankAccountNumber) {
+    public Renter(String id, String firstName, String lastName, String email, String phoneNumber, String industry, String bankAccountNumber, String userId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -18,6 +18,7 @@ public class Renter {
         this.phoneNumber = phoneNumber;
         this.industry = industry;
         this.bankAccountNumber = bankAccountNumber;
+        this.userId = userId;
     }
 
     public String getId() { return id; }
