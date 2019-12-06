@@ -7,22 +7,29 @@ import com.mongodb.client.MongoCollection;
 import edu.cmu.andrew.workbnb.server.http.exceptions.HttpBadRequestException;
 import edu.cmu.andrew.workbnb.server.http.responses.AppResponse;
 import edu.cmu.andrew.workbnb.server.http.utils.PATCH;
-import edu.cmu.andrew.workbnb.server.managers.FavoriteManager;
+import edu.cmu.andrew.workbnb.server.managers.FavoriteManager; 
 import edu.cmu.andrew.workbnb.server.managers.RatingManager;
+import edu.cmu.andrew.workbnb.server.managers.PaymentManager;
+
 import edu.cmu.andrew.workbnb.server.managers.RenterManager;
 import edu.cmu.andrew.workbnb.server.managers.ReservationManager;
-import edu.cmu.andrew.workbnb.server.models.Favorite;
-import edu.cmu.andrew.workbnb.server.models.Rating;
+import edu.cmu.andrew.workbnb.server.models.Payment;
 import edu.cmu.andrew.workbnb.server.models.Renter;
 import edu.cmu.andrew.workbnb.server.models.Reservation;
 import edu.cmu.andrew.workbnb.server.utils.AppLogger;
+import edu.cmu.andrew.workbnb.server.utils.Util;
 import org.bson.Document;
+import org.glassfish.jersey.client.ClientConfig;
 import org.json.JSONObject;
 
 import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -197,18 +204,32 @@ public class RenterInterface extends HttpInterface {
         try {
             JSONObject json = null;
             json = new JSONObject(ow.writeValueAsString(request));
+            String landlordId = json.getString("landlordId");
+            String listingId = json.getString("listingId");
+            Double price = json.getDouble("price");
+            // Ask Stripe to perform the payment transaction
+            Boolean resultStripeTrx = Util.execStripePayment(landlordId, renterId);
+            if (resultStripeTrx) {
+                // Create reservation
+                Reservation newReservation = new Reservation(
+                        renterId,
+                        landlordId,
+                        listingId,
+                        json.getInt("duration"),
+                        price
+                );
 
-            Reservation newReservation = new Reservation(
-                    renterId,
-                    json.getString("landlordId"),
-                    json.getString("listingId"),
-                    json.getInt("duration"),
-                    json.getDouble("price")
-            );
-
-            ReservationManager.getInstance().createReservation(headers, newReservation);
-            return new AppResponse("Insert Successful");
-
+                ReservationManager.getInstance().createReservation(headers, newReservation);
+                // Save transaction record in Payments: For our record
+                Payment payment = new Payment();
+                payment.setRenterId(renterId);
+                payment.setListingId(listingId);
+                payment.setPaymentMethodId("1");
+                payment.setAmount(price);
+                PaymentManager.getInstance().createPayment(headers, payment);
+                return new AppResponse("Your reservation is done");
+            }
+            return new AppResponse("Error. Please try again");
         } catch (Exception e) {
             throw handleException("POST reservations", e);
         }
