@@ -1,6 +1,8 @@
 package edu.cmu.andrew.workbnb.server.utils;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.*;
+import java.net.URI;
 
 public class Util {
     public static String getFileContent(String filePath){
@@ -24,5 +26,13 @@ public class Util {
         }
 
         return "";
+    }
+
+    public static URI getBaseURI() {
+        return UriBuilder.fromUri("http://localhost:8080/api").build();
+    }
+
+    public static Boolean execStripePayment(String landlordId, String renterId){
+        return true;
     }
 }
