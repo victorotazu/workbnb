@@ -13,9 +13,7 @@ import edu.cmu.andrew.workbnb.server.managers.PaymentManager;
 
 import edu.cmu.andrew.workbnb.server.managers.RenterManager;
 import edu.cmu.andrew.workbnb.server.managers.ReservationManager;
-import edu.cmu.andrew.workbnb.server.models.Payment;
-import edu.cmu.andrew.workbnb.server.models.Renter;
-import edu.cmu.andrew.workbnb.server.models.Reservation;
+import edu.cmu.andrew.workbnb.server.models.*;
 import edu.cmu.andrew.workbnb.server.utils.AppLogger;
 import edu.cmu.andrew.workbnb.server.utils.Util;
 import org.bson.Document;
@@ -334,7 +332,7 @@ public class RenterInterface extends HttpInterface {
                     json.getString("renterId"),
                     json.getString("listingId"),
                     json.getString("stars"),
-                    json.getString("userId")
+                    null
             );
             RatingManager.getInstance().createRating(headers,newRating);
             return new AppResponse("Insert Successful");

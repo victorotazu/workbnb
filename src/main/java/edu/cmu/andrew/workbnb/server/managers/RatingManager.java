@@ -39,13 +39,15 @@ public class RatingManager extends Manager{
 
         try{
             Session session = SessionManager.getInstance().getSessionForToken(headers);
+            if(!session.getUserId().equals(rating.getUserId()))
+                throw new AppUnauthorizedException(70,"Invalid id");
 
             JSONObject json = new JSONObject(rating);
 
             Document newDoc = new Document()
                     .append("renterId", rating.getRenterId())
                     .append("listingId",rating.getListingId())
-                    .append("stars",rating.getStars());
+                    .append("stars",rating.getStars()).append("userId",rating.getUserId());
             if (newDoc != null)
                 ratingCollection.insertOne(newDoc);
             else
@@ -59,6 +61,8 @@ public class RatingManager extends Manager{
     public void updateRating(HttpHeaders headers, Rating rating) throws AppException {
         try {
             Session session = SessionManager.getInstance().getSessionForToken(headers);
+            if(!session.getUserId().equals(rating.getUserId()))
+                throw new AppUnauthorizedException(70,"Invalid id");
 
             Bson filter = new Document("_id", new ObjectId(rating.getId()));
             Bson newValue = new Document()
@@ -79,7 +83,9 @@ public class RatingManager extends Manager{
 
     public void deleteRating(HttpHeaders headers, String ratingId) throws AppException {
         try {
-            Session session = SessionManager.getInstance().getSessionForToken(headers);
+            /*Session session = SessionManager.getInstance().getSessionForToken(headers);
+            if(!session.getUserId().equals(rating.getUserId()))
+                throw new AppUnauthorizedException(70,"Invalid id");*/
 
             Bson filter = new Document("_id", new ObjectId(ratingId));
             ratingCollection.deleteOne(filter);
@@ -90,7 +96,9 @@ public class RatingManager extends Manager{
 
     public ArrayList<Rating> getRatingList(HttpHeaders headers) throws AppException {
         try{
-            Session session = SessionManager.getInstance().getSessionForToken(headers);
+//            Session session = SessionManager.getInstance().getSessionForToken(headers);
+//            if(!session.getUserId().equals(rating.getUserId()))
+//                throw new AppUnauthorizedException(70,"Invalid id");
 
             ArrayList<Rating> ratingList = new ArrayList<>();
             FindIterable<Document> ratingDocs = ratingCollection.find();
@@ -114,7 +122,7 @@ public class RatingManager extends Manager{
     public ArrayList<Rating> getRatingListSorted(HttpHeaders headers,String sortby) throws AppException {
         try{
 
-            Session session = SessionManager.getInstance().getSessionForToken(headers);
+            //Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             ArrayList<Rating> ratingList = new ArrayList<>();
             BasicDBObject sortParams = new BasicDBObject();
@@ -139,7 +147,7 @@ public class RatingManager extends Manager{
     public ArrayList<Rating> getRatingListPaginated(HttpHeaders headers,Integer offset, Integer count) throws AppException {
         try{
 
-            Session session = SessionManager.getInstance().getSessionForToken(headers);
+            //Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             ArrayList<Rating> ratingList = new ArrayList<>();
             BasicDBObject sortParams = new BasicDBObject();
@@ -164,7 +172,7 @@ public class RatingManager extends Manager{
     public ArrayList<Rating> getRatingById(HttpHeaders headers, String ratingId) throws AppException {
         try{
 
-            Session session = SessionManager.getInstance().getSessionForToken(headers);
+            //Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             ArrayList<Rating> ratingList = new ArrayList<>();
             FindIterable<Document> ratingDocs = ratingCollection.find();
