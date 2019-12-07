@@ -1,6 +1,5 @@
 package edu.cmu.andrew.workbnb.server.models;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 public class Favorite {
     String id;
