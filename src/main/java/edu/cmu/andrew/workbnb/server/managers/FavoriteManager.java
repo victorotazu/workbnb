@@ -39,8 +39,8 @@ public class FavoriteManager extends Manager{
 
         try{
 
-            /*Session session = SessionManager.getInstance().getSessionForToken(headers);
-            if(!session.getUserId().equals(rating.getUserId()))
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
+            /*if(!session.getUserId().equals(rating.getUserId()))
                 throw new AppUnauthorizedException(70,"Invalid id");*/
 
             JSONObject json = new JSONObject(favorite);
@@ -63,7 +63,7 @@ public class FavoriteManager extends Manager{
     public void updateFavorite(HttpHeaders headers, Favorite favorite) throws AppException {
         try {
 
-            //Session session = SessionManager.getInstance().getSessionForToken(headers);
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             Bson filter = new Document("_id", new ObjectId(favorite.getId()));
             Bson newValue = new Document()
@@ -85,7 +85,7 @@ public class FavoriteManager extends Manager{
     public void deleteFavorite(HttpHeaders headers, String favoriteId) throws AppException {
         try {
 
-            //Session session = SessionManager.getInstance().getSessionForToken(headers);
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             Bson filter = new Document("_id", new ObjectId(favoriteId));
             favoriteCollection.deleteOne(filter);
@@ -97,7 +97,7 @@ public class FavoriteManager extends Manager{
     public ArrayList<Favorite> getFavoriteList(HttpHeaders headers) throws AppException {
         try{
 
-            //Session session = SessionManager.getInstance().getSessionForToken(headers);
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             ArrayList<Favorite> favoriteList = new ArrayList<>();
             FindIterable<Document> favoriteDocs = favoriteCollection.find();
@@ -120,7 +120,7 @@ public class FavoriteManager extends Manager{
     public ArrayList<Favorite> getFavoriteListSorted(HttpHeaders headers,String sortby) throws AppException {
         try{
 
-            //Session session = SessionManager.getInstance().getSessionForToken(headers);
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             ArrayList<Favorite> favoriteList = new ArrayList<>();
             BasicDBObject sortParams = new BasicDBObject();
@@ -144,7 +144,7 @@ public class FavoriteManager extends Manager{
     public ArrayList<Favorite> getFavoriteById(HttpHeaders headers, String favoriteId) throws AppException {
         try{
 
-            //Session session = SessionManager.getInstance().getSessionForToken(headers);
+            Session session = SessionManager.getInstance().getSessionForToken(headers);
 
             ArrayList<Favorite> favoriteList = new ArrayList<>();
             FindIterable<Document> favoriteDocs = favoriteCollection.find();
